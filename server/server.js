@@ -19,25 +19,17 @@ const io = new Server(httpServer, {
  * use Symbol to avoid conflicts
  */
 Socket.prototype[updateSymbol] = function (timer) {
-  this.emit("time", timer.elapsed);
+  const state = { elapsed: timer.elapsed, status: timer.status };
+  this.emit("state", state);
 };
 
 io.on("connection", (socket) => {
   /**
-   * on socket connection, send client current time
-   * then, add socket as a timer observer
-   * if no other sockets connected, attempt to start timer
+   * on socket connection, manually trigger state update to client
+   * then, add socket as a timer observer (for recurring auto state updates)
    */
-  socket.emit("time", timer.elapsed);
+  socket[updateSymbol](timer);
   timer.attach(socket);
-  const socketCount = io.sockets.sockets.size;
-  if (socketCount === 1) {
-    timer.start();
-    console.log(
-      "first socket attempted to start timer. Timer's current time is %s",
-      timer.elapsed
-    );
-  }
 
   /**
    * on socket disconnect, remove socket from timer's observers
@@ -48,7 +40,6 @@ io.on("connection", (socket) => {
     const socketCount = io.sockets.sockets.size;
     if (socketCount === 0) {
       timer.pause();
-      console.log("last socket connection paused timer");
     }
   });
 });
