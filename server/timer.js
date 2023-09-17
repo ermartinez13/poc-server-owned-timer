@@ -1,10 +1,13 @@
-export class Timer {
+import { Subject } from "./subject.js";
+
+export class Timer extends Subject {
   status = "paused";
   timerId = null;
   duration;
   elapsed;
 
   constructor(duration = 120, elapsed = 0) {
+    super();
     this.duration = duration;
     this.elapsed = elapsed;
   }
@@ -20,6 +23,7 @@ export class Timer {
     if (this.elapsed >= this.duration) {
       this.pause();
     }
+    this.notify();
   }
 
   pause() {
