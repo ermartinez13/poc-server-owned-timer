@@ -17,3 +17,20 @@ socket.on("state", (state) => {
   }
   clientState = state;
 });
+
+resetBtn.addEventListener("click", () => {
+  socket.emit("reset");
+});
+
+playPauseBtn.addEventListener("click", () => {
+  // connection is not yet established
+  if (clientState === undefined) return;
+
+  if (clientState.status === "paused") {
+    socket.emit("start");
+  } else if (clientState.status === "running") {
+    socket.emit("pause");
+  } else {
+    throw new Error("Invalid status state");
+  }
+});

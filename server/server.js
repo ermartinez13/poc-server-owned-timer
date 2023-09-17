@@ -42,6 +42,18 @@ io.on("connection", (socket) => {
       timer.pause();
     }
   });
+
+  socket.on("reset", () => {
+    timer.reset();
+  });
+
+  socket.on("start", () => {
+    timer.start();
+  });
+
+  socket.on("pause", () => {
+    timer.pause();
+  });
 });
 
 httpServer.listen(3000);
