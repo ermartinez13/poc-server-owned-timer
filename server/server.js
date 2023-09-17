@@ -24,14 +24,19 @@ Socket.prototype[updateSymbol] = function (timer) {
 
 io.on("connection", (socket) => {
   /**
-   * on socket connection, add socket as a timer observer
-   * if no other sockets connected, start timer
+   * on socket connection, send client current time
+   * then, add socket as a timer observer
+   * if no other sockets connected, attempt to start timer
    */
+  socket.emit("time", timer.elapsed);
   timer.attach(socket);
   const socketCount = io.sockets.sockets.size;
   if (socketCount === 1) {
     timer.start();
-    console.log("first socket connection started timer");
+    console.log(
+      "first socket attempted to start timer. Timer's current time is %s",
+      timer.elapsed
+    );
   }
 
   /**
