@@ -1,11 +1,22 @@
 import { formatTime } from "./helpers.js";
 
 // socket.io client installed from cdn; io becomes available as global
-const socket = io("http://localhost:3000");
+const socket = window.io("http://localhost:3000");
 const timeDisplay = document.querySelector(".display");
 const playPauseBtn = document.querySelector(".play-pause-btn");
 const resetBtn = document.querySelector(".reset-btn");
 
+/**
+ * @typedef State
+ * @type {object}
+ * @property {string} status
+ * @property {number} elapsed
+ */
+
+/**
+ * Holds the last state update provided by the server
+ * @type {State | undefined}
+ * */
 let clientState;
 
 socket.on("state", (state) => {
@@ -23,8 +34,10 @@ resetBtn.addEventListener("click", () => {
 });
 
 playPauseBtn.addEventListener("click", () => {
-  // connection is not yet established
-  if (clientState === undefined) return;
+  if (clientState === undefined) {
+    // connection is not yet established so do nothing
+    return;
+  }
 
   if (clientState.status === "paused") {
     socket.emit("start");
